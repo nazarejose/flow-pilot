@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* PrimeVue Select hover/active blue highlight for sector dropdowns */
+.p-select.p-valid:not(.p-invalid):hover .p-select-label,
+.p-popover *:hover .p-select-option.p-select-option-hover-active {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Override PrimeVue Aura option hover/active to blue */
+.p-select-list .p-select-option:hover {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+.p-select-list .p-select-option.p-select-option-hover-active {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
