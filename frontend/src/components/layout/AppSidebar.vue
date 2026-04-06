@@ -65,7 +65,7 @@ function iconClass(path: string) {
         </li>
         <li
           class="flex items-center gap-3 px-3 py-2.5 cursor-pointer text-sm rounded-lg transition-all duration-150 mb-0.5 whitespace-nowrap overflow-hidden text-blue-600 font-medium hover:bg-blue-50"
-          @click="navigate('/helpdesk')"
+          @click="navigate('/tickets/new')"
         >
           <i class="pi pi-phone text-base min-w-[1.2rem] text-center text-blue-600" />
           <span v-show="!props.collapsed">Abrir um chamado</span>

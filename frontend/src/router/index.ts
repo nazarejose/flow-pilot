@@ -32,6 +32,21 @@ const router = createRouter({
       name: 'helpdesk',
       component: () => import('../views/HelpdeskView.vue'),
     },
+    {
+      path: '/tickets',
+      name: 'tickets',
+      component: () => import('../views/TicketsListView.vue'),
+    },
+    {
+      path: '/tickets/new',
+      name: 'tickets-new',
+      component: () => import('../views/CreateTicketView.vue'),
+    },
+    {
+      path: '/tickets/:id',
+      name: 'tickets-detail',
+      component: () => import('../views/TicketDetailView.vue'),
+    },
   ],
 })
 
