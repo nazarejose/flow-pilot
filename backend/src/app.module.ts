@@ -8,6 +8,7 @@ import { CompaniesModule } from './modules/companies/companies.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SectorsModule } from './modules/sectors/sectors.module';
+import { HelpdesksModule } from './modules/helpdesks/helpdesk.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SectorsModule } from './modules/sectors/sectors.module';
     UsersModule,
     AuthModule,
     SectorsModule,
+    HelpdesksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
