@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { SectorsModule } from './modules/sectors/sectors.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './modules/auth/auth.module';
     CompaniesModule,
     UsersModule,
     AuthModule,
+    SectorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

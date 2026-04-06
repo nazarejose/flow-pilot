@@ -6,9 +6,12 @@
  */
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { CompaniesController } from './companies.controller';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 const mockCompany = {
   id: 'test-uuid-1',
@@ -31,6 +34,9 @@ describe('CompaniesController', () => {
     remove: jest.fn(),
   };
 
+  const mockJwtGuard = { canActivate: () => true };
+  const mockRolesGuard = { canActivate: () => true };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CompaniesController],
@@ -38,6 +44,18 @@ describe('CompaniesController', () => {
         {
           provide: CompaniesService,
           useValue: mockService,
+        },
+        {
+          provide: JwtAuthGuard,
+          useValue: mockJwtGuard,
+        },
+        {
+          provide: RolesGuard,
+          useValue: mockRolesGuard,
+        },
+        {
+          provide: Reflector,
+          useValue: { getAllAndOverride: jest.fn() },
         },
       ],
     }).compile();
