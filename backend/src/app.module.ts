@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { SectorsModule } from './modules/sectors/sectors.module';
 import { HelpdesksModule } from './modules/helpdesks/helpdesk.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
+import { CommentsModule } from './modules/comments/comments.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TicketsModule } from './modules/tickets/tickets.module';
     SectorsModule,
     HelpdesksModule,
     TicketsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
