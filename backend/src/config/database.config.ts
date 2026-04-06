@@ -10,6 +10,6 @@ export const getDatabaseConfig = (
   password: process.env.DB_PASSWORD || 'helpdesk123',
   database: process.env.DB_DATABASE || (isTest ? 'helpdesk_test' : 'helpdesk_dev'),
   autoLoadEntities: true,
-  synchronize: isTest,
+  synchronize: process.env.NODE_ENV !== 'production',
   dropSchema: isTest,
 });
