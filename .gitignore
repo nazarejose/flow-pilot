@@ -1,0 +1,20 @@
+# GSD — contexto local
+.agent/
+.claude/
+.planning/
+
+# Dependências
+node_modules/
+
+# Ambiente
+.env
+.env.*
+!.env.example
+
+# Build
+dist/
+
+# Logs e OS
+*.log
+.DS_Store
+Thumbs.db
