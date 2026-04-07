@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { getComments } from '../api/commentsApi'
 import type { Comment } from '../api/types'
+import CommentInput from './CommentInput.vue'
 import Skeleton from 'primevue/skeleton'
 
 const props = defineProps<{ ticketId: string }>()
@@ -31,6 +32,17 @@ const formatDate = (dateStr: string) => {
   })
 }
 
+// Highlight @mentions in comment content
+const highlightMentions = (content: string) => {
+  const parts = content.split(/(@\S+)/g)
+  return parts.map((part) => {
+    if (part.startsWith('@') && part.length > 1) {
+      return `<span class="mention-highlight">${part}</span>`
+    }
+    return part.replace(/\n/g, '<br>')
+  }).join('')
+}
+
 onMounted(() => { fetchComments(); pollInterval = setInterval(fetchComments, 10000) })
 onUnmounted(() => { if (pollInterval) clearInterval(pollInterval) })
 
@@ -38,21 +50,21 @@ defineExpose({ refresh: fetchComments })
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl shadow-[0px_4px_15px_rgba(0,0,0,0.04)] overflow-hidden mb-6">
-    <div class="px-8 py-5 border-b border-gray-100">
+  <div class="bg-white rounded-2xl shadow-[0px_4px_15px_rgba(0,0,0,0.04)] overflow-hidden mb-4 sm:mb-6">
+    <div class="px-4 sm:px-8 py-4 sm:py-5 border-b border-gray-100">
       <h4 class="text-sm font-bold text-gray-700">Conversa</h4>
     </div>
-    <div v-if="error" class="px-8 py-4"><p class="text-sm text-red-600">{{ error }}</p></div>
-    <div v-else-if="loading" class="px-8 py-5">
+    <div v-if="error" class="px-4 sm:px-8 py-4"><p class="text-sm text-red-600">{{ error }}</p></div>
+    <div v-else-if="loading" class="px-4 sm:px-8 py-5">
       <div v-for="i in 3" :key="i" class="mb-4">
         <Skeleton class="h-3 w-24 mb-2" /><Skeleton class="h-4 w-full" />
       </div>
     </div>
-    <div v-else-if="comments.length === 0" class="px-8 py-8 text-center">
+    <div v-else-if="comments.length === 0" class="px-4 sm:px-8 py-8 text-center">
       <i class="pi pi-comments text-3xl text-gray-200 mb-2" />
       <p class="text-sm text-gray-400">Nenhum comentário ainda</p>
     </div>
-    <div v-else class="px-8 py-5 max-h-[400px] overflow-y-auto">
+    <div v-else class="px-4 sm:px-8 py-5 max-h-[400px] overflow-y-auto">
       <div v-for="comment in comments" :key="comment.id" class="mb-4">
         <div class="flex items-baseline gap-2 mb-1">
           <span class="text-xs font-bold" :class="isCurrentUser(comment.authorId) ? 'text-blue-600' : 'text-gray-700'">
@@ -60,8 +72,21 @@ defineExpose({ refresh: fetchComments })
           </span>
           <span class="text-[10px] text-gray-400">{{ formatDate(comment.createdAt) }}</span>
         </div>
-        <p class="text-sm text-gray-600 whitespace-pre-wrap">{{ comment.content }}</p>
+        <p class="text-sm text-gray-600 whitespace-pre-wrap" v-html="highlightMentions(comment.content)"></p>
       </div>
+    </div>
+
+    <!-- Comment input with @mentions -->
+    <div class="px-4 sm:px-8 py-4 sm:py-5 border-t border-gray-100">
+      <CommentInput :ticket-id="ticketId" @comment-posted="fetchComments" />
     </div>
   </div>
 </template>
+
+<style scoped>
+:deep(.mention-highlight) {
+  color: #3b82f6;
+  font-weight: 600;
+  cursor: pointer;
+}
+</style>

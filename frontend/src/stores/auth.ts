@@ -1,21 +1,65 @@
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import { login as loginApi } from '../api/authApi'
+import { jwtDecode } from 'jwt-decode'
+
+interface JwtPayload {
+  sub: string
+  email: string
+  name: string
+  companyId: string
+  sectorId: string
+  role: string
+}
+
+function decodeUser(token: string) {
+  const payload = jwtDecode<JwtPayload>(token)
+  return {
+    id: payload.sub,
+    email: payload.email,
+    name: payload.name || payload.email.split('@')[0],
+    companyId: payload.companyId,
+    sectorId: payload.sectorId,
+    role: payload.role,
+  }
+}
 
 export const useAuthStore = defineStore('auth', () => {
-  const isAuthenticated = true
-  const token = 'mock-jwt-token'
-  const user = {
-    name: 'Admin User',
-    email: 'admin@flowpilot.com',
-    role: 'admin',
-    companyId: '1',
-  }
+  const storedToken = localStorage.getItem('flowpilot_token') || ''
+
+  // Reactive state
+  const token = ref(storedToken)
+  const user = ref(storedToken ? decodeUser(storedToken) : null)
+  const isAuthenticated = computed(() => !!token.value)
 
   function isLoggedIn(): boolean {
-    return isAuthenticated
+    return !!token.value
   }
 
-  function userRole(): string {
-    return user.role
+  function getUserRole(): string {
+    return user.value?.role || ''
+  }
+
+  function setUser(newToken: string) {
+    localStorage.setItem('flowpilot_token', newToken)
+    token.value = newToken
+    user.value = decodeUser(newToken)
+  }
+
+  function clearAuth() {
+    localStorage.removeItem('flowpilot_token')
+    token.value = ''
+    user.value = null
+  }
+
+  async function doLogin(email: string, password: string) {
+    const { access_token } = await loginApi(email, password)
+    setUser(access_token)
+    return access_token
+  }
+
+  function logout() {
+    clearAuth()
   }
 
   return {
@@ -23,6 +67,10 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     user,
     isLoggedIn,
-    userRole,
+    getUserRole,
+    doLogin,
+    logout,
+    setUser,
+    clearAuth,
   }
 })

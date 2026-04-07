@@ -17,7 +17,10 @@ export class Sector {
   @Column()
   name: string;
 
-  @ManyToOne(() => Company, { nullable: false })
+  @Column({ nullable: true })
+  shortCode?: string;
+
+  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'companyId' })
   company: Company;
 

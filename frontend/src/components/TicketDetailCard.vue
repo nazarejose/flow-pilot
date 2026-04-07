@@ -15,7 +15,7 @@ const statusBadge = (status: string) => {
 }
 
 const priorityMap: Record<string, string> = {
-  low: 'Baixa', alta: 'Alta', medium: 'Média', média: 'Média', alta: 'Alta', baixa: 'Baixa',
+  baixa: 'Baixa', média: 'Média', alta: 'Alta',
 }
 
 const formatDate = (dateStr: string) => {

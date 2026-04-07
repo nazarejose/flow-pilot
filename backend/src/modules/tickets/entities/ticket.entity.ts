@@ -29,6 +29,10 @@ export class Ticket {
   @Column()
   requesterId: string;
 
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'requesterId' })
+  requester: User;
+
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'assignedToId' })
   assignedTo: User | null;

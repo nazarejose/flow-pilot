@@ -12,6 +12,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<{
     id: string;
+    name: string;
     email: string;
     companyId: string;
     sectorId?: string;
@@ -29,6 +30,7 @@ export class AuthService {
 
     return {
       id: user.id,
+      name: user.name,
       email: user.email,
       companyId: user.companyId,
       sectorId: user.sectorId,
@@ -39,6 +41,7 @@ export class AuthService {
   async login(user: any) {
     const payload = {
       sub: user.id,
+      name: user.name,
       email: user.email,
       companyId: user.companyId,
       sectorId: user.sectorId,

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "floating-vue/dist/style.css";
 
 /* PrimeVue Select hover/active blue highlight for sector dropdowns */
 .p-select.p-valid:not(.p-invalid):hover .p-select-label,

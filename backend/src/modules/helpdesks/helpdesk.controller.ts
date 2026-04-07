@@ -46,6 +46,7 @@ export class HelpdeskController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN)
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateHelpdeskDto,
@@ -55,16 +56,19 @@ export class HelpdeskController {
   }
 
   @Post(':id/publish')
+  @Roles(Role.ADMIN)
   async publish(@Param('id') id: string, @Req() req: any) {
     return this.service.publish(id, req.user.companyId);
   }
 
   @Post(':id/unpublish')
+  @Roles(Role.ADMIN)
   async unpublish(@Param('id') id: string, @Req() req: any) {
     return this.service.unpublish(id, req.user.companyId);
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   async remove(@Param('id') id: string, @Req() req: any) {
     await this.service.remove(id, req.user.companyId);
     return { statusCode: 200, message: 'Helpdesk deactivated' };

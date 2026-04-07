@@ -73,6 +73,7 @@ export class TicketController {
   }
 
   @Patch(':id/cancel')
+  @Roles(Role.REQUESTER, Role.ADMIN)
   async cancel(@Param('id') id: string, @Req() req: any) {
     return this.ticketService.cancel(id, req.user.companyId, req.user.id);
   }

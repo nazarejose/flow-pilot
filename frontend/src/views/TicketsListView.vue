@@ -70,7 +70,6 @@ async function fetchTickets(page = 1) {
       result = await getTickets()
     }
 
-    // Backend may not paginate — if no pagination metadata, handle all locally
     totalItems.value = result.length
     totalPages.value = Math.ceil(totalItems.value / perPage)
     tickets.value = result.slice((page - 1) * perPage, page * perPage)
@@ -91,23 +90,19 @@ function onStatusFilterChange() {
   fetchTickets(1)
 }
 
-function onRowClick(row: Ticket) {
-  router.push(`/tickets/${row.id}`)
-}
-
 onMounted(() => fetchTickets())
 watch(statusFilter, onStatusFilterChange)
 </script>
 
 <template>
-  <div class="max-w-[1200px] mx-auto">
-    <div class="flex items-center justify-between mb-6">
+  <div class="w-full max-w-[1200px] mx-auto px-3 sm:px-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
       <div>
-        <h2 class="text-xl font-bold text-gray-800">
-          {{ authStore.userRole() === 'attendant' ? 'Fila de Chamados' : 'Meus Chamados' }}
+        <h2 class="text-lg sm:text-xl font-bold text-gray-800">
+          {{ authStore.user?.role === 'attendant' ? 'Fila de Chamados' : 'Meus Chamados' }}
         </h2>
-        <p class="text-sm text-gray-400 mt-1">
-          {{ authStore.userRole() === 'attendant' ? 'Chamados do seu setor' : 'Chamados abertos por você' }}
+        <p class="text-xs sm:text-sm text-gray-400 mt-1">
+          {{ authStore.user?.role === 'attendant' ? 'Chamados do seu setor' : 'Chamados abertos por você' }}
         </p>
       </div>
       <div class="flex gap-3">
@@ -117,59 +112,63 @@ watch(statusFilter, onStatusFilterChange)
           optionLabel="label"
           optionValue="value"
           placeholder="Filtrar por status"
-          class="w-[200px]"
+          class="w-full sm:w-[200px]"
+          aria-label="Filtrar chamados por status"
         />
       </div>
     </div>
 
     <!-- Error state -->
-    <div v-if="error" class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+    <div v-if="error" class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6" role="alert" aria-live="assertive">
       <p class="text-sm text-red-600">{{ error }}</p>
     </div>
 
     <!-- Table -->
     <div v-if="!loading" class="bg-white rounded-2xl shadow-[0px_4px_15px_rgba(0,0,0,0.04)] overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm" aria-label="Lista de chamados">
           <thead>
             <tr class="border-b border-gray-100">
-              <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Assunto</th>
-              <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-              <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Setor</th>
-              <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Prioridade</th>
-              <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Solicitante</th>
-              <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Data</th>
+              <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Assunto</th>
+              <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+              <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Setor</th>
+              <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Prioridade</th>
+              <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Solicitante</th>
+              <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Data</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="ticket in tickets"
               :key="ticket.id"
-              @click="onRowClick(ticket)"
-              class="border-b border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors"
+              @click="router.push(`/tickets/${ticket.id}`)"
+              @keydown.enter="router.push(`/tickets/${ticket.id}`)"
+              class="border-b border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors focus:outline-none focus:bg-blue-50"
+              tabindex="0"
+              role="row"
             >
-              <td class="px-6 py-4 font-medium text-gray-800">
+              <td class="px-5 sm:px-6 py-4 font-medium text-gray-800">
                 {{ (ticket.fieldValues?.assunto || ticket.fieldValues?.assunto_do_problema || 'Sem assunto') as string }}
               </td>
-              <td class="px-6 py-4">
+              <td class="px-5 sm:px-6 py-4">
                 <Tag :value="statusBadge(ticket.status).label" :severity="statusBadge(ticket.status).severity" class="text-xs px-2 py-0.5" />
               </td>
-              <td class="px-6 py-4 text-gray-500">
+              <td class="px-5 sm:px-6 py-4 text-gray-500">
                 {{ ticket.helpdesk?.name || sectorMap[ticket.helpdesk?.sectorId || ''] || '—' }}
               </td>
-              <td class="px-6 py-4 text-gray-500">
+              <td class="px-5 sm:px-6 py-4 text-gray-500">
                 {{ (ticket.fieldValues?.prioridade || '—') as string }}
               </td>
-              <td class="px-6 py-4 text-gray-500">
+              <td class="px-5 sm:px-6 py-4 text-gray-500">
                 {{ ticket.requester?.name || '—' }}
               </td>
-              <td class="px-6 py-4 text-gray-400 text-xs">
+              <td class="px-5 sm:px-6 py-4 text-gray-400 text-xs">
                 {{ formatDate(ticket.createdAt) }}
               </td>
             </tr>
             <tr v-if="tickets.length === 0">
               <td colspan="6" class="px-6 py-12 text-center">
-                <i class="pi pi-info-circle text-3xl text-gray-200 mb-2" />
+                <i class="pi pi-info-circle text-3xl text-gray-200 mb-2" aria-hidden="true" />
                 <p class="text-sm text-gray-400">Nenhum chamado encontrado</p>
               </td>
             </tr>
@@ -178,40 +177,43 @@ watch(statusFilter, onStatusFilterChange)
       </div>
 
       <!-- Paginator -->
-      <div v-if="totalPages > 1" class="flex items-center justify-between px-6 py-3 border-t border-gray-100">
-        <span class="text-xs text-gray-400">
+      <div v-if="totalPages > 1" class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 sm:px-6 py-3 border-t border-gray-100">
+        <span class="text-xs text-gray-400" aria-live="polite">
           Mostrando {{ (currentPage - 1) * perPage + 1 }}–{{ Math.min(currentPage * perPage, totalItems) }} de {{ totalItems }}
         </span>
-        <div class="flex gap-1">
-          <Button
-            v-for="p in totalPages"
-            :key="p"
-            :label="String(p)"
-            :outlined="currentPage !== p"
-            :text="currentPage === p"
-            size="small"
-            @click="onPageChange(p)"
-          />
-        </div>
+        <nav aria-label="Navegação de páginas">
+          <div class="flex gap-1">
+            <Button
+              v-for="p in totalPages"
+              :key="p"
+              :label="String(p)"
+              :aria-current="currentPage === p ? 'page' : undefined"
+              :outlined="currentPage !== p"
+              :text="currentPage === p"
+              size="small"
+              @click="onPageChange(p)"
+            />
+          </div>
+        </nav>
       </div>
     </div>
 
     <!-- Loading skeleton -->
-    <div v-else class="bg-white rounded-2xl shadow-[0px_4px_15px_rgba(0,0,0,0.04)] overflow-hidden">
+    <div v-else class="bg-white rounded-2xl shadow-[0px_4px_15px_rgba(0,0,0,0.04)] overflow-hidden" aria-busy="true" aria-label="Carregando chamados">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-gray-100">
-            <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Assunto</th>
-            <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-            <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Setor</th>
-            <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Prioridade</th>
-            <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Solicitante</th>
-            <th class="text-left px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Data</th>
+            <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Assunto</th>
+            <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+            <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Setor</th>
+            <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Prioridade</th>
+            <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Solicitante</th>
+            <th scope="col" class="text-left px-5 sm:px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Data</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="i in 5" :key="i" class="border-b border-gray-50">
-            <td class="px-6 py-4" v-for="j in 6" :key="j">
+            <td class="px-5 sm:px-6 py-4" v-for="j in 6" :key="j">
               <Skeleton class="h-4 w-full" />
             </td>
           </tr>

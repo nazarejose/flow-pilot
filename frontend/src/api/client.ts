@@ -8,11 +8,18 @@ const api = axios.create({
   },
 })
 
-// Auth interceptor — attach JWT token from Pinia store
+// Auth interceptor — attach JWT token from localStorage
 api.interceptors.request.use((config) => {
-  const store = (window as any).__authStore
-  if (store?.token) {
-    config.headers.Authorization = `Bearer ${store.token}`
+  const token = localStorage.getItem('flowpilot_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  if (config.data && typeof config.data === 'object') {
+    const cleaned = { ...config.data }
+    Object.keys(cleaned).forEach((k) => {
+      if (cleaned[k] === '' && k !== 'password') delete cleaned[k]
+    })
+    config.data = cleaned
   }
   return config
 })

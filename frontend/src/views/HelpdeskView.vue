@@ -24,7 +24,7 @@ const prioridadeOptions = [
 ]
 
 // Dynamic field definitions per sector
-const dynamicFields = {
+const dynamicFields: Record<string, Array<{ key: string; label: string; type: 'select' | 'input' | 'textarea' | 'number' | 'date' | 'checkbox'; placeholder: string; options?: string[] }>> = {
   ti: [
     { key: 'tipo_problema', label: 'Tipo de Problema', type: 'select' as const, placeholder: 'Selecione...', options: ['Hardware', 'Software', 'Rede', 'Acesso'] },
     { key: 'ativo_relacionado', label: 'Ativo Relacionado', type: 'input' as const, placeholder: 'ID do PC, Impressora, Servidor...' },

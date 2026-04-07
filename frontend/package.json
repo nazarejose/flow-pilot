@@ -11,10 +11,13 @@
   "dependencies": {
     "@primevue/themes": "^4.5.4",
     "axios": "^1.14.0",
+    "floating-vue": "^2.0.0",
+    "jwt-decode": "^4.0.0",
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.4",
     "vue": "^3.5.32",
+    "vue-mention": "^2.0.0-alpha.3",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {

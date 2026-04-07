@@ -87,7 +87,7 @@ export class TicketService {
 
     return this.ticketRepo.find({
       where,
-      relations: ['helpdesk'],
+      relations: ['helpdesk', 'requester'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -114,7 +114,7 @@ export class TicketService {
 
     return this.ticketRepo.find({
       where,
-      relations: ['helpdesk'],
+      relations: ['helpdesk', 'requester'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -126,7 +126,7 @@ export class TicketService {
   ): Promise<Ticket> {
     const ticket = await this.ticketRepo.findOne({
       where: { id },
-      relations: ['helpdesk'],
+      relations: ['helpdesk', 'requester'],
     });
 
     if (!ticket) {
@@ -158,7 +158,7 @@ export class TicketService {
   private async findById(id: string): Promise<Ticket> {
     const ticket = await this.ticketRepo.findOne({
       where: { id },
-      relations: ['helpdesk'],
+      relations: ['helpdesk', 'requester'],
     });
 
     if (!ticket) {

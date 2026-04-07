@@ -6,7 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Helpdesk } from './entities/helpdesk.entity';
 import { HelpdeskCompany } from './entities/helpdesk-company.entity';
 import { CreateHelpdeskDto } from './dto/create-helpdesk.dto';
@@ -86,7 +86,7 @@ export class HelpdeskService {
     }
 
     return this.helpdeskRepo.find({
-      where: { id: helpdeskIds as any, active: true, published: true },
+      where: { id: In(helpdeskIds), active: true, published: true },
       relations: ['permissions'],
     });
   }
